@@ -1,53 +1,8 @@
-FROM daocloud.io/php:7.2-fpm-alpine
+FROM daocloud.io/php:7.1-fpm-alpine
 
 MAINTAINER coding01 <yemeishu@126.com>
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
-RUN apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        curl-dev \
-        imagemagick-dev \
-        libtool \
-        libxml2-dev \
-        postgresql-dev \
-        sqlite-dev \
-    && apk add --no-cache \
-        curl \
-        git \
-        imagemagick \
-        mysql-client \
-        postgresql-libs \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && pecl install xdebug-2.6.1 \
-    && docker-php-ext-enable xdebug \
-    && docker-php-ext-install \
-        curl \
-        iconv \
-        mbstring \
-        pdo \
-        pdo_mysql \
-        pdo_pgsql \
-        pdo_sqlite \
-        pcntl \
-        tokenizer \
-        xml \
-        zip \
-    && curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer \
-    && apk del -f .build-deps
-
-# 修改 composer 为国内镜像
-RUN composer config -g repo.packagist composer https://packagist.laravel-china.org
-
-# install prestissimo
-RUN composer global require "hirak/prestissimo"
-
-# install laravel envoy
-RUN composer global require "laravel/envoy"
-
-#install laravel installer
-RUN composer global require "laravel/installer"
 
 ENV NODE_VERSION 10.9.0
 
@@ -117,5 +72,76 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
 
 RUN yarn config set registry 'https://registry.npm.taobao.org' \
     && npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+RUN apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        curl-dev \
+        imagemagick-dev \
+        libtool \
+        libxml2-dev \
+        postgresql-dev \
+        sqlite-dev \
+    && apk add --no-cache \
+        curl \
+        git \
+        imagemagick \
+        mysql-client \
+        postgresql-libs \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
+    && pecl install xdebug-2.6.1 \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-install \
+        curl \
+        iconv \
+        mbstring \
+        pdo \
+        pdo_mysql \
+        pdo_pgsql \
+        pdo_sqlite \
+        pcntl \
+        tokenizer \
+        xml \
+        zip \
+    && curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer \
+    && apk del -f .build-deps
+
+# 添加自定义扩展
+RUN apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        curl-dev \
+        imagemagick-dev \
+        libtool \
+        libxml2-dev \
+        postgresql-dev \
+        sqlite-dev \
+    && apk add --no-cache \
+        libjpeg \
+        jpeg-dev \
+        libpng \
+        libpng-dev \
+        freetype \
+        freetype-dev \
+    && docker-php-ext-configure \
+      gd \
+      --with-freetype-dir=/usr/include/ \
+      --with-jpeg-dir=/usr/include/ \
+      --with-png-dir=/usr/include/ \
+    && docker-php-ext-install \
+        gd \
+        bcmath\
+    && apk del -f .build-deps
+
+# 修改 composer 为国内镜像
+RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+
+# # install prestissimo
+RUN composer global require "hirak/prestissimo"
+
+# # install laravel envoy
+RUN composer global require "laravel/envoy"
+
+# #install laravel installer
+RUN composer global require "laravel/installer"
 
 WORKDIR /var/www

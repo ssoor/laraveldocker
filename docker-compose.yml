@@ -3,6 +3,7 @@ services:
 
   # The Application
   app:
+    # image: ssoor/app
     build:
       context: ./
       dockerfile: app.dockerfile
@@ -17,6 +18,7 @@ services:
 
   # The Web Server
   web:
+    # image: ssoor/web
     build:
       context: ./
       dockerfile: web.dockerfile

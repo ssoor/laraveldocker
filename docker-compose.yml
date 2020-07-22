@@ -30,7 +30,10 @@ services:
 
   # The Database
   database:
-    image: daocloud.io/mysql:5.7.4
+    # image: ssoor/mysql
+    build:
+      context: ./
+      dockerfile: mysql.dockerfile
     volumes:
       - dbdata:/var/lib/mysql
     environment:

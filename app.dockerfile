@@ -125,7 +125,8 @@ RUN apk add --no-cache --virtual .build-deps \
       --with-png-dir=/usr/include/ \
     && docker-php-ext-install \
         gd \
-        bcmath\
+        bcmath \
+        mysqli \
     && apk del -f .build-deps
 
 # 修改 composer 为国内镜像
